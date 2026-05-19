@@ -1,0 +1,131 @@
+/* ── Variables de marca ─────────────────────────────────── */
+:root {
+  --rojo:       #CC0000;
+  --rojo-vivo:  #FF0000;
+  --rojo-dark:  #990000;
+  --negro:      #0A0A0A;
+  --negro-soft: #1A1A1A;
+  --gris-dark:  #222222;
+  --gris:       #444444;
+  --gris-light: #888888;
+  --blanco:     #FFFFFF;
+  --crema:      #F5F0EB;
+
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body:    'Outfit', sans-serif;
+
+  --shadow-rojo: 0 4px 24px rgba(204,0,0,0.35);
+  --shadow-card: 0 8px 32px rgba(0,0,0,0.18);
+  --radius:      12px;
+  --radius-lg:   20px;
+}
+
+/* ── Reset y base ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--negro);
+  color: var(--blanco);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Tipografía ─────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+/* ── Bootstrap overrides ────────────────────────────────── */
+.btn-primary {
+  background: var(--rojo);
+  border-color: var(--rojo);
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.btn-primary:hover {
+  background: var(--rojo-dark);
+  border-color: var(--rojo-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-rojo);
+}
+.btn-outline-light {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.card {
+  background: var(--negro-soft);
+  border: 1px solid var(--gris-dark);
+  border-radius: var(--radius);
+  color: var(--blanco);
+}
+
+.badge-rojo {
+  background: var(--rojo);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Animaciones ────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(204,0,0,0.4); }
+  50%       { box-shadow: 0 0 0 12px rgba(204,0,0,0); }
+}
+
+.fade-up { animation: fadeUp 0.5s ease both; }
+.fade-up-1 { animation-delay: 0.1s; }
+.fade-up-2 { animation-delay: 0.2s; }
+.fade-up-3 { animation-delay: 0.3s; }
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--negro); }
+::-webkit-scrollbar-thumb { background: var(--rojo); border-radius: 3px; }
+
+/* ── Utilidades ─────────────────────────────────────────── */
+.text-rojo  { color: var(--rojo) !important; }
+.bg-rojo    { background: var(--rojo) !important; }
+.bg-negro   { background: var(--negro) !important; }
+.divider-rojo {
+  height: 3px;
+  background: linear-gradient(90deg, var(--rojo), transparent);
+  border: none;
+  margin: 1.5rem 0;
+}
+
+/* ── Números Bendecidos ──────────────────────────────────── */
+@keyframes goldShine {
+  0%   { box-shadow: 0 0 6px rgba(255,215,0,0.4); }
+  50%  { box-shadow: 0 0 18px rgba(255,215,0,0.8); }
+  100% { box-shadow: 0 0 6px rgba(255,215,0,0.4); }
+}
+.blessed-number {
+  background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+  color: #000 !important;
+  animation: goldShine 2s infinite;
+  font-weight: 800 !important;
+}
+.blessed-badge {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
