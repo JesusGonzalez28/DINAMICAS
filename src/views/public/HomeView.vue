@@ -41,7 +41,7 @@
                 <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
                   <div style="font-size:0.7rem; color:var(--gris-light); text-transform:uppercase;">Por número</div>
                   <div style="font-family:var(--font-display); font-size:1.8rem; color:var(--rojo);">
-                    ${{ Number(raffle.value?.pricePerNumber).toLocaleString('es-CO') }}
+                    ${{ Number(raffle?.pricePerNumber).toLocaleString('es-CO') }}
                   </div>
                 </div>
                 <div v-if="raffle.blessedCount > 0" class="p-3 rounded-3"
@@ -117,7 +117,7 @@
                       <span style="font-family:var(--font-display); font-size:2.5rem; line-height:1; opacity:0.15; color:white;">{{ pkg.quantity }}</span>
                     </div>
                     <div style="font-weight:700; font-size:1rem; margin-top:4px;">
-${{ (pkg.quantity * Number(raffle.value?.pricePerNumber || 600)).toLocaleString('es-CO') }}                    </div>
+${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO') }}                    </div>
                     <div style="font-size:0.7rem; color:var(--gris-light);">{{ pkg.label }}</div>
                   </div>
                 </div>
@@ -373,7 +373,7 @@ const uploading = ref(false)
 const uploadError = ref(null)
 
 const totalFormatted = computed(() =>
-  ((form.value.quantity || 0) * Number(raffle.value?.pricePerNumber || 400)).toLocaleString('es-CO')
+  ((form.value.quantity || 0) * Number(raffle?.pricePerNumber || 400)).toLocaleString('es-CO')
 )
 
 const isValid = computed(() =>
