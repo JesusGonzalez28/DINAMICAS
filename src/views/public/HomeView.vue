@@ -41,7 +41,7 @@
                 <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
                   <div style="font-size:0.7rem; color:var(--gris-light); text-transform:uppercase;">Por número</div>
                   <div style="font-family:var(--font-display); font-size:1.8rem; color:var(--rojo);">
-                    ${{ Number(raffle.pricePerNumber).toLocaleString('es-CO') }}
+                    ${{ Number(raffle.value?.pricePerNumber).toLocaleString('es-CO') }}
                   </div>
                 </div>
                 <div v-if="raffle.blessedCount > 0" class="p-3 rounded-3"
@@ -79,9 +79,9 @@
               Premio adicional de <strong style="color:#FFD700;">${{ Number(raffle.blessedPrize).toLocaleString('es-CO') }} COP</strong> por número
             </p>
           </div>
-          <div class="d-flex flex-wrap justify-content-center gap-2">
+          <div class="d-flex flex-wrap justify-content-center" style="gap: 10px 12px;">
             <span v-for="b in blessedNumbers" :key="b.number">
-              <span v-if="!b.taken" class="blessed-number px-3 py-2 rounded" style="font-family:monospace; font-size:1rem; font-weight:800;">
+              <span v-if="!b.taken" class="blessed-number rounded" style="display:inline-block; padding:8px 16px; font-family:monospace; font-size:1rem; font-weight:800; letter-spacing:0.05em; background:linear-gradient(135deg,#FFD700,#FFA500); color:#000; box-shadow:0 2px 8px rgba(255,215,0,0.3);">
                 ⭐ {{ b.number }}
               </span>
               <span v-else style="display:inline-block; background:#1a1a1a; color:#333; padding:8px 12px; border-radius:6px; font-family:monospace; font-size:0.9rem; text-decoration:line-through;">
@@ -117,8 +117,7 @@
                       <span style="font-family:var(--font-display); font-size:2.5rem; line-height:1; opacity:0.15; color:white;">{{ pkg.quantity }}</span>
                     </div>
                     <div style="font-weight:700; font-size:1rem; margin-top:4px;">
-                      ${{ (pkg.quantity * Number(raffle.pricePerNumber)).toLocaleString('es-CO') }}
-                    </div>
+${{ (pkg.quantity * Number(raffle.value?.pricePerNumber || 600)).toLocaleString('es-CO') }}                    </div>
                     <div style="font-size:0.7rem; color:var(--gris-light);">{{ pkg.label }}</div>
                   </div>
                 </div>
@@ -128,10 +127,10 @@
               <div class="p-3 rounded-3 mb-3" style="background:var(--negro-soft); border:1px solid var(--gris-dark);">
                 <div style="font-size:0.8rem; color:var(--gris-light); margin-bottom:10px;">¿QUIERES UNA CANTIDAD DIFERENTE?</div>
                 <div class="d-flex align-items-center gap-2">
-                  <button @click="form.quantity = Math.max(25, form.quantity - 5)" class="qty-btn">−</button>
+                  <button @click="form.quantity = Math.max(25, form.quantity - 1)" class="qty-btn">−</button>
                   <input v-model.number="form.quantity" type="number" min="25" class="form-control text-center"
                          style="background:var(--gris-dark); border-color:var(--gris); color:white; font-weight:700; font-size:1.1rem; width:80px;" />
-                  <button @click="form.quantity += 5" class="qty-btn">+</button>
+                  <button @click="form.quantity += 1" class="qty-btn">+</button>
                   <span style="font-size:0.75rem; color:var(--rojo);">Mínimo 25 por paquete</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top:1px solid var(--gris-dark);">
