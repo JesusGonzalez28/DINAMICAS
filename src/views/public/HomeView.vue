@@ -12,7 +12,7 @@
     </div>
 
     <div v-else>
-      <!-- ── HERO: Imagen del premio ──────────────────────── -->
+      <!-- HERO -->
       <section class="position-relative" style="min-height: 60vh; display:flex; align-items:center; overflow:hidden;">
         <div class="position-absolute top-0 start-0 w-100 h-100"
              :style="raffle.prizeImage
@@ -41,7 +41,7 @@
                 <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
                   <div style="font-size:0.7rem; color:var(--gris-light); text-transform:uppercase;">Por número</div>
                   <div style="font-family:var(--font-display); font-size:1.8rem; color:var(--rojo);">
-                    ${{ Number(raffle?.pricePerNumber).toLocaleString('es-CO') }}
+                    ${{ Number(raffle.pricePerNumber).toLocaleString('es-CO') }}
                   </div>
                 </div>
                 <div v-if="raffle.blessedCount > 0" class="p-3 rounded-3"
@@ -51,7 +51,6 @@
                 </div>
               </div>
 
-              <!-- Progreso -->
               <div v-if="stats" class="mt-4" style="max-width:480px;">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="font-size:0.8rem; color:var(--gris-light);">{{ stats.sold }} vendidos de {{ stats.totalNumbers }}</span>
@@ -70,7 +69,7 @@
         </div>
       </section>
 
-      <!-- ── NÚMEROS BENDECIDOS ───────────────────────────── -->
+      <!-- NÚMEROS BENDECIDOS -->
       <section v-if="raffle.blessedCount > 0" style="padding:40px 0; background:var(--negro-soft); border-top:1px solid var(--gris-dark);">
         <div class="container">
           <div class="text-center mb-3">
@@ -92,21 +91,20 @@
         </div>
       </section>
 
-      <!-- ── FORMULARIO DE COMPRA (one-page) ─────────────── -->
+      <!-- FORMULARIO DE COMPRA -->
       <section id="comprar" style="padding:48px 0;">
         <div class="container">
           <div class="row g-4">
 
-            <!-- COLUMNA IZQUIERDA: Paquetes + cantidad -->
+            <!-- COLUMNA IZQUIERDA -->
             <div class="col-lg-5">
-              <!-- Paso 1 -->
               <div class="step-header mb-3">
                 <span class="step-num">1</span>
                 <span class="step-title">SELECCIONA TU PAQUETE</span>
               </div>
 
               <div class="row g-2 mb-4">
-                <div v-for="pkg in raffle.packages || defaultPackages" :key="pkg.quantity" class="col-6">
+                <div v-for="pkg in computedPackages" :key="pkg.quantity" class="col-6">
                   <div @click="selectPackage(pkg.quantity)"
                        class="pkg-box p-3 rounded-3 text-center"
                        :class="{ 'pkg-selected': form.quantity === pkg.quantity }">
@@ -117,7 +115,8 @@
                       <span style="font-family:var(--font-display); font-size:2.5rem; line-height:1; opacity:0.15; color:white;">{{ pkg.quantity }}</span>
                     </div>
                     <div style="font-weight:700; font-size:1rem; margin-top:4px;">
-${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO') }}                    </div>
+                      ${{ pkg.total.toLocaleString('es-CO') }}
+                    </div>
                     <div style="font-size:0.7rem; color:var(--gris-light);">{{ pkg.label }}</div>
                   </div>
                 </div>
@@ -128,7 +127,7 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
                 <div style="font-size:0.8rem; color:var(--gris-light); margin-bottom:10px;">¿QUIERES UNA CANTIDAD DIFERENTE?</div>
                 <div class="d-flex align-items-center gap-2">
                   <button @click="form.quantity = Math.max(25, form.quantity - 1)" class="qty-btn">−</button>
-                  <input v-model.number="form.quantity" type="number" min="25" class="form-control text-center"
+                  <input v-model.number="form.quantity" type="number" min="25" step="1" class="form-control text-center"
                          style="background:var(--gris-dark); border-color:var(--gris); color:white; font-weight:700; font-size:1.1rem; width:80px;" />
                   <button @click="form.quantity += 1" class="qty-btn">+</button>
                   <span style="font-size:0.75rem; color:var(--rojo);">Mínimo 25 por paquete</span>
@@ -142,11 +141,10 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
               </div>
             </div>
 
-            <!-- COLUMNA DERECHA: Datos + pago -->
+            <!-- COLUMNA DERECHA -->
             <div class="col-lg-7">
               <div class="p-4 rounded-3" style="background:rgba(255,255,255,0.03); border:1px solid var(--gris-dark);">
 
-                <!-- Paso 2: Datos -->
                 <div class="step-header mb-3">
                   <span class="step-num">2</span>
                   <span class="step-title">DATOS DEL COMPRADOR</span>
@@ -172,13 +170,11 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
                   </div>
                 </div>
 
-                <!-- Paso 3: Pago -->
                 <div class="step-header mb-3">
                   <span class="step-num">3</span>
                   <span class="step-title">MÉTODO DE PAGO</span>
                 </div>
 
-                <!-- Botón Nequi -->
                 <div class="mb-3">
                   <div class="p-3 rounded-3 d-flex align-items-center gap-3"
                        style="background:rgba(204,0,0,0.1); border:2px solid var(--rojo);">
@@ -190,7 +186,6 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
                   </div>
                 </div>
 
-                <!-- Total a pagar -->
                 <div class="p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center"
                      style="background:rgba(0,200,0,0.08); border:1px solid rgba(0,200,0,0.2);">
                   <div style="font-size:0.85rem; color:var(--gris-light);">
@@ -201,13 +196,11 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
                   </div>
                 </div>
 
-                <!-- Instrucciones -->
                 <div class="p-3 rounded-3 mb-3" style="background:var(--negro-soft); border:1px solid var(--gris-dark); font-size:0.8rem; color:var(--gris-light);">
                   <i class="bi bi-arrow-right-circle me-1" style="color:var(--rojo);"></i>
                   Cuenta de Ahorro Bancolombia · 912-498418-50
                 </div>
 
-                <!-- Número Nequi con copiar -->
                 <div class="p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center"
                      style="background:#0a0a1a; border:2px solid #3a3a6a; border-radius:12px;">
                   <div>
@@ -227,7 +220,6 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
                   ✓ Número copiado
                 </div>
 
-                <!-- QR con lupa -->
                 <div class="text-center mb-4">
                   <div style="font-size:0.75rem; color:var(--gris-light); margin-bottom:8px;">
                     <i class="bi bi-qr-code me-1" style="color:var(--rojo);"></i>Código QR Bre-B
@@ -243,13 +235,11 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
                   <div style="font-size:0.7rem; color:var(--gris-light); margin-top:4px;">Haz clic para ampliar</div>
                 </div>
 
-                <!-- Subir comprobante -->
                 <div style="font-size:0.85rem; font-weight:600; margin-bottom:8px; color:var(--gris-light);">
                   4. COMPROBANTE DE PAGO
                 </div>
 
                 <div v-if="!purchaseId">
-                  <!-- Primero reservar -->
                   <div v-if="error" class="alert mb-3"
                        style="background:rgba(204,0,0,0.15); border:1px solid var(--rojo); color:white; font-size:0.85rem;">
                     <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
@@ -265,7 +255,6 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
                 </div>
 
                 <div v-else>
-                  <!-- Ya reservado — subir comprobante -->
                   <div class="p-3 rounded-3 mb-3" style="background:rgba(0,200,0,0.05); border:1px solid rgba(0,200,0,0.2);">
                     <div style="font-size:0.8rem; color:#4caf50; margin-bottom:4px;">✓ Números reservados</div>
                     <div style="font-size:0.75rem; color:var(--gris-light);">
@@ -305,7 +294,7 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
         </div>
       </section>
 
-      <!-- ── CONFIRMACIÓN FINAL ───────────────────────────── -->
+      <!-- CONFIRMACIÓN FINAL -->
       <div v-if="done" class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
            style="background:rgba(0,0,0,0.85); z-index:9999;">
         <div class="text-center p-5 rounded-3" style="background:var(--negro-soft); border:2px solid var(--rojo); max-width:480px;">
@@ -319,7 +308,7 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
         </div>
       </div>
 
-      <!-- ── QR MODAL (lupa) ─────────────────────────────── -->
+      <!-- QR MODAL -->
       <div v-if="showQR" @click="showQR = false"
            class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
            style="background:rgba(0,0,0,0.9); z-index:9999; cursor:zoom-out;">
@@ -331,7 +320,6 @@ ${{ (pkg.quantity * Number(raffle?.pricePerNumber || 600)).toLocaleString('es-CO
 
     </div>
 
-    <!-- Footer -->
     <footer class="py-4 text-center" style="background:var(--negro-soft); border-top:2px solid var(--gris-dark);">
       <div style="font-family:var(--font-display); font-size:1.1rem; color:var(--gris-light);">
         DINÁMICAS LOS HERMANOS © {{ new Date().getFullYear() }}
@@ -364,6 +352,14 @@ const defaultPackages = [
   { quantity: 200, label: 'Diamante' },
 ]
 
+const computedPackages = computed(() => {
+  const price = Number(raffle.value?.pricePerNumber || 0)
+  return defaultPackages.map(pkg => ({
+    ...pkg,
+    total: pkg.quantity * price
+  }))
+})
+
 const form = ref({ quantity: 25, buyerName: '', buyerPhone: '', buyerEmail: '', buyerCity: '' })
 const reserving = ref(false)
 const error = ref(null)
@@ -373,7 +369,7 @@ const uploading = ref(false)
 const uploadError = ref(null)
 
 const totalFormatted = computed(() =>
-  ((form.value.quantity || 0) * Number(raffle?.pricePerNumber || 400)).toLocaleString('es-CO')
+  ((form.value.quantity || 0) * Number(raffle.value?.pricePerNumber || 0)).toLocaleString('es-CO')
 )
 
 const isValid = computed(() =>
@@ -434,10 +430,6 @@ async function subirComprobante() {
   }
 }
 
-function formatDate(d) {
-  return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
-}
-
 onMounted(async () => {
   try {
     const { data } = await rafflesApi.getActive()
@@ -457,7 +449,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Steps */
 .step-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
 .step-num {
   width:28px; height:28px; border-radius:50%;
@@ -467,7 +458,6 @@ onMounted(async () => {
 }
 .step-title { font-family:var(--font-display); font-size:1rem; letter-spacing:0.05em; }
 
-/* Paquetes */
 .pkg-box {
   background: var(--negro-soft);
   border: 1px solid var(--gris-dark);
@@ -477,7 +467,6 @@ onMounted(async () => {
 .pkg-box:hover { border-color: var(--rojo); }
 .pkg-selected { border-color: var(--rojo) !important; background: rgba(204,0,0,0.12) !important; }
 
-/* Qty buttons */
 .qty-btn {
   width:36px; height:36px; border-radius:8px;
   background:var(--gris-dark); color:white; border:none;
@@ -487,7 +476,6 @@ onMounted(async () => {
 }
 .qty-btn:hover { background: var(--rojo); }
 
-/* Form */
 .form-label-sm { font-size:0.8rem; color:var(--gris-light); margin-bottom:4px; display:block; }
 .form-dark {
   background: var(--gris-dark) !important;
@@ -496,7 +484,6 @@ onMounted(async () => {
 }
 .form-dark::placeholder { color: var(--gris) !important; }
 
-/* QR */
 .qr-thumb { position:relative; }
 .qr-overlay {
   position:absolute; top:0; left:0; right:0; bottom:0;
@@ -506,6 +493,5 @@ onMounted(async () => {
 }
 .qr-thumb:hover .qr-overlay { opacity:1; }
 
-/* Voucher drop */
 .voucher-drop:hover, .voucher-drop.active { border-color: var(--rojo) !important; }
 </style>
