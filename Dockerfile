@@ -2,14 +2,15 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
-
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 RUN chmod +x node_modules/.bin/vite
 
 COPY . .
+
+# Crear archivo .env con la URL del backend
+RUN echo "VITE_API_URL=https://dinamicas-back-end-production.up.railway.app" > .env
+
 RUN node node_modules/vite/bin/vite.js build
 
 FROM nginx:alpine
