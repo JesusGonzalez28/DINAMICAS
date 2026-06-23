@@ -2,13 +2,11 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.1.3 --activate
-
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --frozen-lockfile || pnpm install
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
 
 COPY . .
-RUN pnpm run build
+RUN npm run build
 
 # Servir con nginx
 FROM nginx:alpine
