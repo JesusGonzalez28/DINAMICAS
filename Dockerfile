@@ -4,10 +4,10 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
-RUN ./node_modules/.bin/vite --version
+RUN chmod +x node_modules/.bin/vite
 
 COPY . .
-RUN ./node_modules/.bin/vite build
+RUN node node_modules/vite/bin/vite.js build
 
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
