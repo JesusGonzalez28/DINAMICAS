@@ -5,7 +5,7 @@ nixPkgs = ["nodejs_20"]
 cmds = ["npm install -g pnpm", "pnpm install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["pnpm exec vite build"]
+cmds = ["pnpm run build"]
 
 [start]
 cmd = "pnpm dlx serve dist -p $PORT"
