@@ -5,7 +5,12 @@
         <i class="bi bi-arrow-left me-1"></i>Volver a rifas
       </router-link>
 
-      <h1 style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 4px;">COMPRAS</h1>
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom: 4px;">
+        <h1 style="font-family: var(--font-display); font-size: 2rem; margin: 0;">COMPRAS</h1>
+        <router-link :to="`/admin/rifas/${raffleId}/estadisticas`" class="btn btn-sm btn-outline-light">
+          <i class="bi bi-trophy me-1"></i>Top compradores / Buscar número
+        </router-link>
+      </div>
       <hr class="divider-rojo" />
 
       <div v-if="loading" class="text-center py-5">

@@ -49,7 +49,8 @@ export const purchasesApi = {
   uploadVoucher: (purchaseId, formData) =>
     api.post(`/purchases/${purchaseId}/voucher`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   getByRaffle: (raffleId) => api.get(`/raffles/${raffleId}/purchases`),
-  getTopBuyers: (raffleId) => api.get(`/raffles/${raffleId}/top-buyers`),
+  getTopBuyers: (raffleId) => api.get(`/raffles/${raffleId}/purchases-stats/top-buyers`),
+  findTicketOwner: (raffleId, number) => api.get(`/raffles/${raffleId}/purchases-stats/find-number/${number}`),
   approve: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/approve`),
   reject: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/reject`),
   cancel: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/cancel`),

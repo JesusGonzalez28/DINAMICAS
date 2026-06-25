@@ -12,6 +12,7 @@ import AdminDashboard from '@/views/admin/AdminDashboard.vue'
 import AdminRaffles from '@/views/admin/AdminRaffles.vue'
 import AdminRaffleCreate from '@/views/admin/AdminRaffleCreate.vue'
 import AdminPurchases from '@/views/admin/AdminPurchases.vue'
+import AdminRaffleStats from '@/views/admin/AdminRaffleStats.vue'
 
 const routes = [
   // Públicas
@@ -29,6 +30,7 @@ const routes = [
       { path: 'rifas', name: 'admin-raffles', component: AdminRaffles },
       { path: 'rifas/nueva', name: 'admin-raffle-create', component: AdminRaffleCreate },
       { path: 'rifas/:id/compras', name: 'admin-purchases', component: AdminPurchases },
+      { path: 'rifas/:id/estadisticas', name: 'admin-raffle-stats', component: AdminRaffleStats },
     ],
   },
 ]
