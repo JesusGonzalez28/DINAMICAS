@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import HomeView from '@/views/public/HomeView.vue'
 import RaffleDetailView from '@/views/public/RaffleDetailView.vue'
 import PurchaseView from '@/views/public/PurchaseView.vue'
+import CheckMyNumbersView from '@/views/public/CheckMyNumbersView.vue'
 
 // ── Vistas admin ───────────────────────────────────────────────
 import AdminLogin from '@/views/admin/AdminLogin.vue'
@@ -13,15 +14,17 @@ import AdminRaffles from '@/views/admin/AdminRaffles.vue'
 import AdminRaffleCreate from '@/views/admin/AdminRaffleCreate.vue'
 import AdminPurchases from '@/views/admin/AdminPurchases.vue'
 import AdminRaffleStats from '@/views/admin/AdminRaffleStats.vue'
+import AdminSettings from '@/views/admin/AdminSettings.vue'
 
 const routes = [
   // Públicas
   { path: '/', name: 'home', component: HomeView },
   { path: '/rifas/:id', name: 'raffle-detail', component: RaffleDetailView },
   { path: '/rifas/:id/comprar', name: 'purchase', component: PurchaseView },
+  { path: '/consultar-numeros', name: 'check-my-numbers', component: CheckMyNumbersView },
 
   // Admin
-  { path: '/admin/login', name: 'admin-login', component: AdminLogin },
+  { path: '/control-rifas-2026-lh', name: 'admin-login', component: AdminLogin },
   {
     path: '/admin',
     meta: { requiresAuth: true },
@@ -31,6 +34,7 @@ const routes = [
       { path: 'rifas/nueva', name: 'admin-raffle-create', component: AdminRaffleCreate },
       { path: 'rifas/:id/compras', name: 'admin-purchases', component: AdminPurchases },
       { path: 'rifas/:id/estadisticas', name: 'admin-raffle-stats', component: AdminRaffleStats },
+      { path: 'configuracion', name: 'admin-settings', component: AdminSettings },
     ],
   },
 ]

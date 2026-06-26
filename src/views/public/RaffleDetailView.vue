@@ -99,7 +99,18 @@
               <i class="bi bi-ticket-perforated me-2" style="color: var(--rojo);"></i>PARTICIPAR
             </h3>
 
-            <div v-if="raffle.status !== 'OPEN'" class="text-center py-3" style="color: var(--gris-light);">
+            <div v-if="raffle.status === 'DRAWN'" class="text-center py-3">
+              <div style="font-size: 3rem; line-height: 1;">🏆</div>
+              <span class="badge mt-2 d-inline-block" style="background: rgba(255,215,0,0.15); color: #FFD700; border: 1px solid #FFD700; letter-spacing: 0.08em; font-size: 0.7rem; padding: 6px 14px;">
+                EVENTO FINALIZADO
+              </span>
+              <p class="mt-3 mb-1" style="color: var(--gris-light); font-size: 0.9rem;">¿Ya participaste? Consulta tus números aquí:</p>
+              <router-link to="/consultar-numeros" class="btn btn-primary w-100 mt-2">
+                <i class="bi bi-search me-2"></i>Consultar mis números
+              </router-link>
+            </div>
+
+            <div v-else-if="raffle.status !== 'OPEN'" class="text-center py-3" style="color: var(--gris-light);">
               <i class="bi bi-lock" style="font-size: 2rem;"></i>
               <p class="mt-2">Esta rifa ya no está disponible.</p>
             </div>
@@ -136,7 +147,7 @@ const stats = ref(null)
 const blessedNumbers = ref([])
 const loading = ref(true)
 
-const statusLabel = computed(() => ({ OPEN: 'ABIERTA', CLOSED: 'CERRADA', DRAWN: 'SORTEADA' }[raffle.value?.status]))
+const statusLabel = computed(() => ({ OPEN: 'ABIERTA', CLOSED: 'CERRADA', DRAWN: 'FINALIZADA' }[raffle.value?.status]))
 
 function formatDate(d) {
   return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })

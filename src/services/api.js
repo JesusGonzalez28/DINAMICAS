@@ -22,7 +22,7 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/admin/login'
+      window.location.href = '/control-rifas-2026-lh'
     }
     return Promise.reject(err)
   }
@@ -51,6 +51,7 @@ export const purchasesApi = {
   getByRaffle: (raffleId) => api.get(`/raffles/${raffleId}/purchases`),
   getTopBuyers: (raffleId) => api.get(`/raffles/${raffleId}/purchases-stats/top-buyers`),
   findTicketOwner: (raffleId, number) => api.get(`/raffles/${raffleId}/purchases-stats/find-number/${number}`),
+  checkMyNumbers: (email, phone) => api.post('/purchases/check-my-numbers', { email, phone }),
   approve: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/approve`),
   reject: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/reject`),
   cancel: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/cancel`),
@@ -59,4 +60,9 @@ export const purchasesApi = {
 export const authApi = {
   login: (data) => api.post('/auth/login', data),
   profile: () => api.get('/auth/profile'),
+}
+
+export const settingsApi = {
+  get: () => api.get('/settings'),
+  update: (formData) => api.patch('/settings', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 }

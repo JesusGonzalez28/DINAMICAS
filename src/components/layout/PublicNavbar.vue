@@ -16,21 +16,11 @@
         </div>
       </router-link>
 
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav ms-auto align-items-center gap-2">
-          <li class="nav-item">
-            <router-link class="nav-link fw-500" to="/">Rifas</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="btn btn-primary btn-sm px-3" to="/admin/login">
-              <i class="bi bi-shield-lock me-1"></i> Admin
-            </router-link>
-          </li>
-        </ul>
+      <div class="d-flex align-items-center gap-3">
+        <router-link class="nav-link fw-500 d-none d-sm-inline" to="/">Rifas</router-link>
+        <router-link class="nav-link fw-500" to="/consultar-numeros">
+          <i class="bi bi-search me-1"></i><span class="d-none d-sm-inline">Consultar mis números</span><span class="d-inline d-sm-none">Mis números</span>
+        </router-link>
       </div>
     </div>
   </nav>

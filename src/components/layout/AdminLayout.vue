@@ -36,6 +36,12 @@
               <span v-if="!collapsed">Rifas</span>
             </router-link>
           </li>
+          <li>
+            <router-link to="/admin/configuracion" class="sidebar-link" active-class="active" :title="collapsed ? 'Configuración' : ''">
+              <i class="bi bi-gear" style="flex-shrink:0; font-size:1.1rem;"></i>
+              <span v-if="!collapsed">Configuración</span>
+            </router-link>
+          </li>
         </ul>
       </nav>
 
@@ -85,7 +91,7 @@ const userInitial = computed(() => auth.user?.name?.charAt(0).toUpperCase() || '
 
 function logout() {
   auth.logout()
-  router.push('/admin/login')
+  router.push('/control-rifas-2026-lh')
 }
 </script>
 

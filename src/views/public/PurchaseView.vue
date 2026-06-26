@@ -277,7 +277,15 @@ onMounted(async () => {
   try {
     const { data } = await purchasesApi.getPackages()
     packages.value = data.packages
-    if (data.payment) paymentInfo.value = data.payment
+    if (data.payment) {
+      paymentInfo.value = data.payment
+      if (data.payment.qrImage) {
+        const base = import.meta.env.VITE_API_URL || ''
+        qrImage.value = data.payment.qrImage.startsWith('http')
+          ? data.payment.qrImage
+          : `${base}/${data.payment.qrImage.replace(/^\.?\//, '')}`
+      }
+    }
   } catch {}
 })
 </script>
