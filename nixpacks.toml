@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_20", "nodePackages.npm"]
 
 [phases.install]
-cmds = ["npm install -g pnpm", "pnpm install --no-frozen-lockfile"]
+cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
-cmds = ["echo 'VITE_API_URL=https://dinamicas-back-end-production.up.railway.app' > .env", "pnpm exec vite build"]
+cmds = ["echo 'VITE_API_URL=https://dinamicas-back-end-production.up.railway.app' > .env", "npm run build"]
 
 [start]
-cmd = "pnpm dlx serve dist -p $PORT"
+cmd = "npx serve dist -p $PORT"
