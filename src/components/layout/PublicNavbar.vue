@@ -17,7 +17,6 @@
       </router-link>
 
       <div class="d-flex align-items-center gap-3">
-        <router-link class="nav-link fw-500 d-none d-sm-inline" to="/">Rifas</router-link>
         <router-link class="nav-link fw-500" to="/consultar-numeros">
           <i class="bi bi-search me-1"></i><span class="d-none d-sm-inline">Consultar mis números</span><span class="d-inline d-sm-none">Mis números</span>
         </router-link>

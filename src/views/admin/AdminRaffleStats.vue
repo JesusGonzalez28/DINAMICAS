@@ -60,9 +60,9 @@
       </div>
 
       <!-- ── Top de compradores ── -->
-      <div class="p-4 rounded-3" style="background: var(--negro-soft); border: 1px solid var(--gris-dark);">
+      <div class="p-4 rounded-3 mb-4" style="background: var(--negro-soft); border: 1px solid var(--gris-dark);">
         <h2 style="font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 12px;">
-          <i class="bi bi-trophy me-2"></i>Top de compradores
+          <i class="bi bi-trophy me-2"></i>Top de compradores (general)
         </h2>
 
         <div v-if="loadingTop" class="text-center py-4">
@@ -103,6 +103,76 @@
           </table>
         </div>
       </div>
+
+      <!-- ── Top por día ── -->
+      <div class="p-4 rounded-3" style="background: var(--negro-soft); border: 1px solid var(--gris-dark);">
+        <h2 style="font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 12px;">
+          <i class="bi bi-calendar-day me-2"></i>Top de compradores por día
+        </h2>
+
+        <div class="d-flex gap-2 flex-wrap mb-3">
+          <input v-model="selectedDate" type="date" class="form-control"
+                 style="background: var(--gris-dark); border-color: var(--gris); color: white; max-width: 220px;" />
+          <button @click="loadTopByDay" :disabled="loadingDay || !selectedDate" class="btn btn-primary">
+            <span v-if="loadingDay" class="spinner-border spinner-border-sm me-2"></span>
+            <i v-else class="bi bi-search me-2"></i>Consultar
+          </button>
+        </div>
+
+        <div v-if="dayError" class="alert mb-3" style="background: rgba(204,0,0,0.15); border: 1px solid var(--rojo); color: var(--blanco);">
+          <i class="bi bi-exclamation-triangle me-2"></i>{{ dayError }}
+        </div>
+
+        <div v-if="dayResult && !loadingDay">
+          <div v-if="dayResult.purchases.length === 0" class="text-center py-3" style="color: var(--gris-light);">
+            No hay compras aprobadas para el día seleccionado
+          </div>
+
+          <div v-else>
+            <div class="mb-3 p-3 rounded-3 d-flex justify-content-between align-items-center"
+                 style="background: rgba(204,0,0,0.1); border: 1px solid rgba(204,0,0,0.3);">
+              <span style="font-size: 0.85rem; color: var(--gris-light);">Total recaudado ese día</span>
+              <span style="font-family: var(--font-display); font-size: 1.4rem; color: var(--rojo);">
+                ${{ dayResult.grandTotal.toLocaleString('es-CO') }} COP
+              </span>
+            </div>
+
+            <div v-for="b in dayResult.purchases" :key="b.buyerEmail"
+                 class="p-3 rounded-3 mb-3"
+                 style="background: var(--gris-dark); border: 1px solid var(--gris);">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span style="font-size: 1.4rem;">
+                    {{ b.rank === 1 ? '🥇' : b.rank === 2 ? '🥈' : b.rank === 3 ? '🥉' : `#${b.rank}` }}
+                  </span>
+                  <div>
+                    <div style="font-weight: 700; font-size: 1rem;">{{ b.buyerName }}</div>
+                    <div style="font-size: 0.75rem; color: var(--gris-light);">
+                      <i class="bi bi-envelope me-1"></i>{{ b.buyerEmail }}
+                      · <i class="bi bi-telephone me-1"></i>{{ b.buyerPhone }}
+                      <span v-if="b.buyerCity"> · <i class="bi bi-geo-alt me-1"></i>{{ b.buyerCity }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <div style="font-family: var(--font-display); color: var(--rojo); font-size: 1.4rem;">{{ b.totalNumbers }} núm.</div>
+                  <div style="font-size: 0.8rem; color: var(--gris-light);">${{ b.totalSpent.toLocaleString('es-CO') }} COP</div>
+                </div>
+              </div>
+
+              <div style="font-size: 0.75rem; color: var(--gris-light); margin-bottom: 6px;">NÚMEROS COMPRADOS</div>
+              <div class="d-flex flex-wrap gap-1">
+                <span v-for="n in b.numbers" :key="n.number"
+                      :style="n.isBlessed
+                        ? 'background: linear-gradient(135deg,#FFD700,#FFA500); color:#000; padding:3px 8px; border-radius:4px; font-family:monospace; font-size:0.8rem; font-weight:700;'
+                        : 'background: var(--rojo); color:white; padding:3px 8px; border-radius:4px; font-family:monospace; font-size:0.8rem; font-weight:700;'">
+                  <template v-if="n.isBlessed">⭐</template>{{ n.number }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </AdminLayout>
 </template>
@@ -123,6 +193,26 @@ const searchNumber = ref('')
 const searchingNumber = ref(false)
 const numberResult = ref(null)
 const numberError = ref('')
+
+const selectedDate = ref(new Date().toISOString().slice(0, 10))
+const loadingDay = ref(false)
+const dayResult = ref(null)
+const dayError = ref('')
+
+async function loadTopByDay() {
+  if (!selectedDate.value) return
+  loadingDay.value = true
+  dayError.value = ''
+  dayResult.value = null
+  try {
+    const res = await purchasesApi.getTopBuyersByDay(raffleId, selectedDate.value)
+    dayResult.value = res.data
+  } catch (e) {
+    dayError.value = e.response?.data?.message || 'Error al cargar el top del día'
+  } finally {
+    loadingDay.value = false
+  }
+}
 
 async function loadTopBuyers() {
   loadingTop.value = true

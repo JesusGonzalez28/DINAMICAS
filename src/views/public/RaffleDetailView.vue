@@ -105,8 +105,8 @@
                 EVENTO FINALIZADO
               </span>
               <p class="mt-3 mb-1" style="color: var(--gris-light); font-size: 0.9rem;">¿Ya participaste? Consulta tus números aquí:</p>
-              <router-link to="/consultar-numeros" class="btn btn-primary w-100 mt-2">
-                <i class="bi bi-search me-2"></i>Consultar mis números
+              <router-link to="/consultar-numeros" class="btn-consultar-tickets w-100 mt-2 d-block text-decoration-none">
+                🎟️ CONSULTAR MIS TICKETS
               </router-link>
             </div>
 
@@ -171,3 +171,29 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.btn-consultar-tickets {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  padding: 14px 24px;
+  color: white;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  text-decoration: none !important;
+}
+
+.btn-consultar-tickets:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+</style>
