@@ -152,8 +152,17 @@
 
                 <div class="mb-3">
                   <label class="form-label-sm">Correo electrónico *</label>
-                  <input v-model="form.buyerEmail" type="email" class="form-control form-dark"
-                         placeholder="ejemplo@gmail.com · ejemplo@hotmail.com" />
+                  <div class="position-relative">
+                    <input v-model="form.buyerEmail" type="email" class="form-control form-dark"
+                           placeholder="ejemplo@gmail.com · ejemplo@hotmail.com"
+                           @blur="autofillBuyer" />
+                    <span v-if="lookingUpBuyer" class="position-absolute" style="right: 12px; top: 50%; transform: translateY(-50%);">
+                      <span class="spinner-border spinner-border-sm" style="color: var(--gris-light);"></span>
+                    </span>
+                  </div>
+                  <div v-if="autofillMsg" class="mt-1" style="font-size: 0.75rem; color: #4CAF50;">
+                    <i class="bi bi-check-circle me-1"></i>{{ autofillMsg }}
+                  </div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label-sm">Nombre completo *</label>
@@ -368,6 +377,27 @@ const voucherFile = ref(null)
 const uploading = ref(false)
 const uploadError = ref(null)
 
+const lookingUpBuyer = ref(false)
+const autofillMsg = ref('')
+
+async function autofillBuyer() {
+  const email = form.value.buyerEmail.trim()
+  if (!email.includes('@')) return
+  lookingUpBuyer.value = true
+  autofillMsg.value = ''
+  try {
+    const res = await purchasesApi.lookupBuyer(email)
+    if (res.data.found) {
+      if (!form.value.buyerName) form.value.buyerName = res.data.buyerName
+      if (!form.value.buyerPhone) form.value.buyerPhone = res.data.buyerPhone
+      if (!form.value.buyerCity) form.value.buyerCity = res.data.buyerCity
+      autofillMsg.value = '¡Datos completados automáticamente desde tu compra anterior!'
+    }
+  } catch { /* silencioso */ } finally {
+    lookingUpBuyer.value = false
+  }
+}
+
 const totalFormatted = computed(() =>
   ((form.value.quantity || 0) * Number(raffle.value?.pricePerNumber || 0)).toLocaleString('es-CO')
 )
@@ -399,6 +429,7 @@ function resetForm() {
   voucherFile.value = null
   error.value = null
   uploadError.value = null
+  autofillMsg.value = ''
 }
 
 async function reservar() {
