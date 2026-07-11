@@ -47,16 +47,6 @@
         <h5 style="font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 16px;">TUS DATOS</h5>
 
         <div class="mb-3">
-          <label class="form-label" style="font-size: 0.85rem; color: var(--gris-light);">Nombre completo *</label>
-          <input v-model="form.buyerName" type="text" class="form-control"
-                 style="background: var(--gris-dark); border-color: var(--gris); color: white;" placeholder="Juan Pérez" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label" style="font-size: 0.85rem; color: var(--gris-light);">Teléfono / WhatsApp *</label>
-          <input v-model="form.buyerPhone" type="tel" class="form-control"
-                 style="background: var(--gris-dark); border-color: var(--gris); color: white;" placeholder="+573001234567" />
-        </div>
-        <div class="mb-3">
           <label class="form-label" style="font-size: 0.85rem; color: var(--gris-light);">Correo electrónico * <small>(aquí recibirás tus números)</small></label>
           <div class="position-relative">
             <input v-model="form.buyerEmail" type="email" class="form-control"
@@ -69,6 +59,16 @@
           <div v-if="autofillMsg" class="mt-1" style="font-size: 0.75rem; color: #4CAF50;">
             <i class="bi bi-check-circle me-1"></i>{{ autofillMsg }}
           </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" style="font-size: 0.85rem; color: var(--gris-light);">Nombre completo *</label>
+          <input v-model="form.buyerName" type="text" class="form-control"
+                 style="background: var(--gris-dark); border-color: var(--gris); color: white;" placeholder="Juan Pérez" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" style="font-size: 0.85rem; color: var(--gris-light);">Teléfono / WhatsApp *</label>
+          <input v-model="form.buyerPhone" type="tel" class="form-control"
+                 style="background: var(--gris-dark); border-color: var(--gris); color: white;" placeholder="+573001234567" />
         </div>
         <div class="mb-4">
           <label class="form-label" style="font-size: 0.85rem; color: var(--gris-light);">Ciudad *</label>
