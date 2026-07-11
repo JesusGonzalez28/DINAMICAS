@@ -58,8 +58,17 @@
         </div>
         <div class="mb-3">
           <label class="form-label" style="font-size: 0.85rem; color: var(--gris-light);">Correo electrónico * <small>(aquí recibirás tus números)</small></label>
-          <input v-model="form.buyerEmail" type="email" class="form-control"
-                 style="background: var(--gris-dark); border-color: var(--gris); color: white;" placeholder="juan@email.com" />
+          <div class="position-relative">
+            <input v-model="form.buyerEmail" type="email" class="form-control"
+                   style="background: var(--gris-dark); border-color: var(--gris); color: white;" placeholder="juan@email.com"
+                   @blur="autofillBuyer" />
+            <span v-if="lookingUpBuyer" class="position-absolute" style="right: 12px; top: 50%; transform: translateY(-50%);">
+              <span class="spinner-border spinner-border-sm" style="color: var(--gris-light);"></span>
+            </span>
+          </div>
+          <div v-if="autofillMsg" class="mt-1" style="font-size: 0.75rem; color: #4CAF50;">
+            <i class="bi bi-check-circle me-1"></i>{{ autofillMsg }}
+          </div>
         </div>
         <div class="mb-4">
           <label class="form-label" style="font-size: 0.85rem; color: var(--gris-light);">Ciudad *</label>
@@ -222,6 +231,27 @@ const uploading = ref(false)
 const uploadError = ref(null)
 
 const form = ref({ quantity: 25, buyerName: '', buyerPhone: '', buyerEmail: '', buyerCity: '' })
+
+const lookingUpBuyer = ref(false)
+const autofillMsg = ref('')
+
+async function autofillBuyer() {
+  const email = form.value.buyerEmail.trim()
+  if (!email.includes('@')) return
+  lookingUpBuyer.value = true
+  autofillMsg.value = ''
+  try {
+    const res = await purchasesApi.lookupBuyer(email)
+    if (res.data.found) {
+      if (!form.value.buyerName) form.value.buyerName = res.data.buyerName
+      if (!form.value.buyerPhone) form.value.buyerPhone = res.data.buyerPhone
+      if (!form.value.buyerCity) form.value.buyerCity = res.data.buyerCity
+      autofillMsg.value = '¡Datos completados automáticamente desde tu compra anterior!'
+    }
+  } catch { /* silencioso */ } finally {
+    lookingUpBuyer.value = false
+  }
+}
 
 const totalFormatted = computed(() => ((form.value.quantity || 0) * 400).toLocaleString('es-CO'))
 

@@ -53,6 +53,7 @@ export const purchasesApi = {
   getTopBuyersByDay: (raffleId, date) => api.get(`/raffles/${raffleId}/purchases-stats/top-buyers-by-day`, { params: { date } }),
   findTicketOwner: (raffleId, number) => api.get(`/raffles/${raffleId}/purchases-stats/find-number/${number}`),
   checkMyNumbers: (email, phone) => api.post('/purchases/check-my-numbers', { email, phone }),
+  lookupBuyer: (email) => api.get('/purchases/lookup-buyer', { params: { email } }),
   approve: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/approve`),
   reject: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/reject`),
   cancel: (raffleId, purchaseId) => api.patch(`/raffles/${raffleId}/purchases/${purchaseId}/cancel`),
