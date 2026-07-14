@@ -44,7 +44,7 @@ export const rafflesApi = {
 }
 
 export const purchasesApi = {
-  getPackages: () => api.get('/packages'),
+  getPackages: (raffleId) => api.get('/packages', { params: raffleId ? { raffleId } : {} }),
   create: (raffleId, data) => api.post(`/raffles/${raffleId}/purchases`, data),
   uploadVoucher: (purchaseId, formData) =>
     api.post(`/purchases/${purchaseId}/voucher`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),

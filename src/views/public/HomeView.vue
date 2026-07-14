@@ -205,9 +205,22 @@
                   </div>
                 </div>
 
-                <div class="p-3 rounded-3 mb-3" style="background:var(--negro-soft); border:1px solid var(--gris-dark); font-size:0.8rem; color:var(--gris-light);">
-                  <i class="bi bi-arrow-right-circle me-1" style="color:var(--rojo);"></i>
-                  Cuenta de Ahorro Bancolombia · 912-498418-50
+                <div class="p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center"
+                     style="background:var(--negro-soft); border:1px solid var(--gris-dark); border-radius:12px;">
+                  <div>
+                    <div style="font-size:0.7rem; color:var(--gris-light); margin-bottom:2px;">
+                      <i class="bi bi-arrow-right-circle me-1" style="color:var(--rojo);"></i>CUENTA DE AHORRO BANCOLOMBIA
+                    </div>
+                    <div style="font-family:var(--font-display); font-size:1.4rem; letter-spacing:0.03em; color:white;">
+                      {{ bancolombiaAccount }}
+                    </div>
+                  </div>
+                  <button @click="copyBancolombia" class="btn" style="background:rgba(255,255,255,0.05); color:white; font-size:1.3rem; padding:8px 12px; border-radius:10px;">
+                    <i class="bi bi-copy"></i>
+                  </button>
+                </div>
+                <div v-if="copiedBancolombia" class="text-center mb-2" style="color:#4caf50; font-size:0.8rem;">
+                  ✓ Número de cuenta copiado
                 </div>
 
                 <div class="p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center"
@@ -352,7 +365,8 @@ const copied = ref(false)
 const done = ref(false)
 
 const nequiNumber = '3126324715'
-const minQuantity = ref(25)
+const bancolombiaAccount = ref('677-678822.78')
+const copiedBancolombia = ref(false)
 
 const defaultPackages = [
   { quantity: 25, label: 'Básico' },
@@ -364,12 +378,18 @@ const defaultPackages = [
 
 const computedPackages = computed(() => {
   const price = Number(raffle.value?.pricePerNumber || 0)
-  return defaultPackages
-    .filter(pkg => pkg.quantity >= minQuantity.value)
-    .map(pkg => ({
-      ...pkg,
-      total: pkg.quantity * price
-    }))
+  const source = (raffle.value?.packages && raffle.value.packages.length)
+    ? raffle.value.packages
+    : defaultPackages
+  return source.map(pkg => ({
+    ...pkg,
+    total: pkg.quantity * price
+  }))
+})
+
+const minQuantity = computed(() => {
+  const list = computedPackages.value
+  return list.length ? Math.min(...list.map(p => p.quantity)) : 25
 })
 
 const form = ref({ quantity: 25, buyerName: '', buyerPhone: '', buyerEmail: '', buyerCity: '' })
@@ -419,6 +439,12 @@ function copyNumber() {
   navigator.clipboard.writeText(nequiNumber)
   copied.value = true
   setTimeout(() => copied.value = false, 2000)
+}
+
+function copyBancolombia() {
+  navigator.clipboard.writeText(bancolombiaAccount.value)
+  copiedBancolombia.value = true
+  setTimeout(() => copiedBancolombia.value = false, 2000)
 }
 
 function onFileChange(e) {
@@ -474,6 +500,7 @@ onMounted(async () => {
     ])
     stats.value = s.data
     blessedNumbers.value = b.data
+    form.value.quantity = minQuantity.value
   } catch {
     raffle.value = null
   } finally {
@@ -481,14 +508,11 @@ onMounted(async () => {
   }
 
   try {
-    const pkg = await purchasesApi.getPackages()
-    if (pkg.data?.minimumPurchase) {
-      minQuantity.value = pkg.data.minimumPurchase
-      if (form.value.quantity < minQuantity.value) {
-        form.value.quantity = minQuantity.value
-      }
+    const pkg = await purchasesApi.getPackages(raffle.value?.id)
+    if (pkg.data?.payment?.bancolombiaAccount) {
+      bancolombiaAccount.value = pkg.data.payment.bancolombiaAccount
     }
-  } catch { /* usa el valor por defecto (25) */ }
+  } catch { /* usa el valor por defecto */ }
 })
 </script>
 

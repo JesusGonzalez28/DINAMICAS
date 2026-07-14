@@ -231,7 +231,7 @@ const uploading = ref(false)
 const uploadError = ref(null)
 
 const form = ref({ quantity: 25, buyerName: '', buyerPhone: '', buyerEmail: '', buyerCity: '' })
-const minQuantity = ref(25)
+const minQuantity = computed(() => packages.value.length ? Math.min(...packages.value.map(p => p.quantity)) : 25)
 
 const lookingUpBuyer = ref(false)
 const autofillMsg = ref('')
@@ -306,15 +306,10 @@ async function subirComprobante() {
 
 onMounted(async () => {
   try {
-    const { data } = await purchasesApi.getPackages()
-    packages.value = data.minimumPurchase
-      ? data.packages.filter(p => p.quantity >= data.minimumPurchase)
-      : data.packages
-    if (data.minimumPurchase) {
-      minQuantity.value = data.minimumPurchase
-      if (form.value.quantity < minQuantity.value) {
-        form.value.quantity = minQuantity.value
-      }
+    const { data } = await purchasesApi.getPackages(raffleId)
+    packages.value = data.packages
+    if (data.minimumPurchase && form.value.quantity < data.minimumPurchase) {
+      form.value.quantity = data.minimumPurchase
     }
     if (data.payment) {
       paymentInfo.value = data.payment
