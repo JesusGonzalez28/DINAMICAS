@@ -2,7 +2,7 @@
   <AdminLayout>
     <div class="fade-up" style="max-width: 560px;">
       <h1 style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 4px;">CONFIGURACIÓN</h1>
-      <p style="color: var(--gris-light); margin-bottom: 12px;">Datos de pago Nequi, Bancolombia y código QR</p>
+      <p style="color: var(--gris-light); margin-bottom: 12px;">Datos de pago Nequi y código QR</p>
       <hr class="divider-rojo" />
 
       <div v-if="loading" class="text-center py-5">
@@ -26,15 +26,6 @@
           <input v-model="form.nequiName" type="text" class="form-control"
                  style="background: var(--gris-dark); border-color: var(--gris); color: white;"
                  placeholder="Jesus David Gonzalez Tapias" />
-        </div>
-
-        <div class="mb-4">
-          <label class="form-label" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-            <i class="bi bi-bank me-1"></i>Cuenta de Ahorro Bancolombia
-          </label>
-          <input v-model="form.bancolombiaAccount" type="text" class="form-control"
-                 style="background: var(--gris-dark); border-color: var(--gris); color: white;"
-                 placeholder="677-678822.78" />
         </div>
 
         <div class="mb-4">
@@ -84,7 +75,7 @@ const saving = ref(false)
 const message = ref('')
 const messageIsError = ref(false)
 
-const form = ref({ nequiNumber: '', nequiName: '', bancolombiaAccount: '' })
+const form = ref({ nequiNumber: '', nequiName: '' })
 const qrFile = ref(null)
 const qrPreview = ref(null)
 
@@ -94,7 +85,6 @@ async function load() {
     const res = await settingsApi.get()
     form.value.nequiNumber = res.data.nequiNumber
     form.value.nequiName = res.data.nequiName
-    form.value.bancolombiaAccount = res.data.bancolombiaAccount
     if (res.data.qrImage) {
       const base = import.meta.env.VITE_API_URL || ''
       qrPreview.value = res.data.qrImage.startsWith('http')
@@ -122,7 +112,6 @@ async function save() {
     const formData = new FormData()
     formData.append('nequiNumber', form.value.nequiNumber)
     formData.append('nequiName', form.value.nequiName)
-    formData.append('bancolombiaAccount', form.value.bancolombiaAccount)
     if (qrFile.value) formData.append('qrImage', qrFile.value)
 
     await settingsApi.update(formData)

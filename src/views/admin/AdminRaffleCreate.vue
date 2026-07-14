@@ -74,6 +74,29 @@
           </div>
         </div>
 
+        <!-- Selector de cifras -->
+        <div class="mb-4">
+          <label class="form-label" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            🔢 Número de cifras de la rifa
+          </label>
+          <div class="d-flex flex-wrap gap-2 mt-1">
+            <button v-for="opt in digitsOptions" :key="opt.value" type="button"
+                    @click="form.digits = opt.value"
+                    class="btn"
+                    :style="form.digits === opt.value
+                      ? 'background: var(--rojo); color: white; border: 2px solid var(--rojo); font-weight: 700;'
+                      : 'background: var(--gris-dark); color: var(--gris-light); border: 2px solid var(--gris);'">
+              {{ opt.label }}
+            </button>
+          </div>
+          <div class="mt-2 p-2 rounded-3" style="background: rgba(204,0,0,0.05); border: 1px solid rgba(204,0,0,0.2); font-size: 0.8rem; color: var(--gris-light);">
+            🎟️ <strong style="color: white;">{{ totalTickets.toLocaleString('es-CO') }}</strong> tickets disponibles
+            · Números del <strong style="color: white;">{{ '0'.repeat(form.digits) }}</strong>
+            al <strong style="color: white;">{{ '9'.repeat(form.digits) }}</strong>
+            · Recaudo potencial: <strong style="color: var(--rojo);">${{ (totalTickets * form.pricePerNumber).toLocaleString('es-CO') }} COP</strong>
+          </div>
+        </div>
+
         <hr class="divider-rojo" />
 
         <!-- Números bendecidos -->
@@ -135,10 +158,10 @@
         <div class="p-3 rounded-3 mb-4" style="background: rgba(204,0,0,0.08); border: 1px solid var(--rojo);">
           <div style="font-size: 0.8rem; color: var(--gris-light); margin-bottom: 4px;">Resumen</div>
           <div style="font-family: var(--font-display); font-size: 1.2rem;">
-            10.000 tickets · ${{ form.pricePerNumber.toLocaleString('es-CO') }} c/u
+            {{ totalTickets.toLocaleString('es-CO') }} tickets · ${{ form.pricePerNumber.toLocaleString('es-CO') }} c/u
           </div>
           <div style="font-size: 0.85rem; color: var(--rojo);">
-            Recaudo potencial: ${{ (form.pricePerNumber * 10000).toLocaleString('es-CO') }} COP
+            Recaudo potencial: ${{ (form.pricePerNumber * totalTickets).toLocaleString('es-CO') }} COP
           </div>
         </div>
 
@@ -157,7 +180,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import { rafflesApi } from '@/services/api'
 
@@ -166,6 +189,13 @@ const error = ref(null)
 const created = ref(false)
 const prizeImageFile = ref(null)
 const prizeImagePreview = ref(null)
+
+const digitsOptions = [
+  { value: 2, label: '2 cifras (00-99 · 100 tickets)' },
+  { value: 3, label: '3 cifras (000-999 · 1.000 tickets)' },
+  { value: 4, label: '4 cifras (0000-9999 · 10.000 tickets)' },
+  { value: 5, label: '5 cifras (00000-99999 · 100.000 tickets)' },
+]
 
 const defaultPackages = () => [
   { quantity: 25,  label: 'Paquete Básico' },
@@ -179,8 +209,11 @@ const form = ref({
   title: '', prize: '', description: '',
   pricePerNumber: 400, drawDate: '',
   blessedCount: 10, blessedPrize: 50000,
+  digits: 4,
   packages: defaultPackages(),
 })
+
+const totalTickets = computed(() => Math.pow(10, form.value.digits))
 
 function onImageChange(e) {
   const file = e.target.files[0]
@@ -198,7 +231,7 @@ function removePackage(i) {
 }
 
 function resetForm() {
-  form.value = { title: '', prize: '', description: '', pricePerNumber: 400, drawDate: '', blessedCount: 10, blessedPrize: 50000, packages: defaultPackages() }
+  form.value = { title: '', prize: '', description: '', pricePerNumber: 400, drawDate: '', blessedCount: 10, blessedPrize: 50000, digits: 4, packages: defaultPackages() }
   prizeImageFile.value = null
   prizeImagePreview.value = null
   created.value = false
@@ -217,6 +250,7 @@ async function submit() {
     if (form.value.drawDate) formData.append('drawDate', new Date(form.value.drawDate).toISOString())
     formData.append('blessedCount', String(form.value.blessedCount))
     formData.append('blessedPrize', String(form.value.blessedPrize))
+    formData.append('digits', String(form.value.digits))
     if (form.value.packages.length > 0) {
       formData.append('packages', JSON.stringify(form.value.packages))
     }
