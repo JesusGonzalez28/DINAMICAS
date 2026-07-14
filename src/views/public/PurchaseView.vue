@@ -33,9 +33,9 @@
 
         <!-- Cantidad personalizada -->
         <div class="mb-4">
-          <label class="form-label" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">O cantidad personalizada (mínimo 25)</label>
+          <label class="form-label" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">O cantidad personalizada (mínimo {{ minQuantity }})</label>
           <div class="input-group">
-            <input v-model.number="form.quantity" type="number" min="25" class="form-control"
+            <input v-model.number="form.quantity" type="number" :min="minQuantity" class="form-control"
                    style="background: var(--gris-dark); border-color: var(--gris); color: white;" placeholder="Ej: 150" />
             <span class="input-group-text" style="background: var(--rojo); border-color: var(--rojo); color: white; font-weight: 700;">
               ${{ totalFormatted }}
@@ -231,6 +231,7 @@ const uploading = ref(false)
 const uploadError = ref(null)
 
 const form = ref({ quantity: 25, buyerName: '', buyerPhone: '', buyerEmail: '', buyerCity: '' })
+const minQuantity = ref(25)
 
 const lookingUpBuyer = ref(false)
 const autofillMsg = ref('')
@@ -256,7 +257,7 @@ async function autofillBuyer() {
 const totalFormatted = computed(() => ((form.value.quantity || 0) * 400).toLocaleString('es-CO'))
 
 const isValid = computed(() =>
-  form.value.quantity >= 25 &&
+  form.value.quantity >= minQuantity.value &&
   form.value.buyerName.trim() &&
   form.value.buyerPhone.trim() &&
   form.value.buyerEmail.includes('@') &&
@@ -306,7 +307,15 @@ async function subirComprobante() {
 onMounted(async () => {
   try {
     const { data } = await purchasesApi.getPackages()
-    packages.value = data.packages
+    packages.value = data.minimumPurchase
+      ? data.packages.filter(p => p.quantity >= data.minimumPurchase)
+      : data.packages
+    if (data.minimumPurchase) {
+      minQuantity.value = data.minimumPurchase
+      if (form.value.quantity < minQuantity.value) {
+        form.value.quantity = minQuantity.value
+      }
+    }
     if (data.payment) {
       paymentInfo.value = data.payment
       if (data.payment.qrImage) {

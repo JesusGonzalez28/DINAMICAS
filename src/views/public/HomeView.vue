@@ -126,11 +126,11 @@
               <div class="p-3 rounded-3 mb-3" style="background:var(--negro-soft); border:1px solid var(--gris-dark);">
                 <div style="font-size:0.8rem; color:var(--gris-light); margin-bottom:10px;">¿QUIERES UNA CANTIDAD DIFERENTE?</div>
                 <div class="d-flex align-items-center gap-2">
-                  <button @click="form.quantity = Math.max(25, form.quantity - 1)" class="qty-btn">−</button>
-                  <input v-model.number="form.quantity" type="number" min="25" step="1" class="form-control text-center"
+                  <button @click="form.quantity = Math.max(minQuantity, form.quantity - 1)" class="qty-btn">−</button>
+                  <input v-model.number="form.quantity" type="number" :min="minQuantity" step="1" class="form-control text-center"
                          style="background:var(--gris-dark); border-color:var(--gris); color:white; font-weight:700; font-size:1.1rem; width:80px;" />
                   <button @click="form.quantity += 1" class="qty-btn">+</button>
-                  <span style="font-size:0.75rem; color:var(--rojo);">Mínimo 25 por paquete</span>
+                  <span style="font-size:0.75rem; color:var(--rojo);">Mínimo {{ minQuantity }} por paquete</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top:1px solid var(--gris-dark);">
                   <span style="font-size:0.8rem; color:var(--gris-light);">TOTAL A INVERTIR</span>
@@ -152,8 +152,17 @@
 
                 <div class="mb-3">
                   <label class="form-label-sm">Correo electrónico *</label>
-                  <input v-model="form.buyerEmail" type="email" class="form-control form-dark"
-                         placeholder="ejemplo@gmail.com · ejemplo@hotmail.com" />
+                  <div class="position-relative">
+                    <input v-model="form.buyerEmail" type="email" class="form-control form-dark"
+                           placeholder="ejemplo@gmail.com · ejemplo@hotmail.com"
+                           @blur="autofillBuyer" />
+                    <span v-if="lookingUpBuyer" class="position-absolute" style="right: 12px; top: 50%; transform: translateY(-50%);">
+                      <span class="spinner-border spinner-border-sm" style="color: var(--gris-light);"></span>
+                    </span>
+                  </div>
+                  <div v-if="autofillMsg" class="mt-1" style="font-size: 0.75rem; color: #4CAF50;">
+                    <i class="bi bi-check-circle me-1"></i>{{ autofillMsg }}
+                  </div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label-sm">Nombre completo *</label>
@@ -343,6 +352,7 @@ const copied = ref(false)
 const done = ref(false)
 
 const nequiNumber = '3126324715'
+const minQuantity = ref(25)
 
 const defaultPackages = [
   { quantity: 25, label: 'Básico' },
@@ -354,10 +364,12 @@ const defaultPackages = [
 
 const computedPackages = computed(() => {
   const price = Number(raffle.value?.pricePerNumber || 0)
-  return defaultPackages.map(pkg => ({
-    ...pkg,
-    total: pkg.quantity * price
-  }))
+  return defaultPackages
+    .filter(pkg => pkg.quantity >= minQuantity.value)
+    .map(pkg => ({
+      ...pkg,
+      total: pkg.quantity * price
+    }))
 })
 
 const form = ref({ quantity: 25, buyerName: '', buyerPhone: '', buyerEmail: '', buyerCity: '' })
@@ -368,12 +380,33 @@ const voucherFile = ref(null)
 const uploading = ref(false)
 const uploadError = ref(null)
 
+const lookingUpBuyer = ref(false)
+const autofillMsg = ref('')
+
+async function autofillBuyer() {
+  const email = form.value.buyerEmail.trim()
+  if (!email.includes('@')) return
+  lookingUpBuyer.value = true
+  autofillMsg.value = ''
+  try {
+    const res = await purchasesApi.lookupBuyer(email)
+    if (res.data.found) {
+      if (!form.value.buyerName) form.value.buyerName = res.data.buyerName
+      if (!form.value.buyerPhone) form.value.buyerPhone = res.data.buyerPhone
+      if (!form.value.buyerCity) form.value.buyerCity = res.data.buyerCity
+      autofillMsg.value = '¡Datos completados automáticamente desde tu compra anterior!'
+    }
+  } catch { /* silencioso */ } finally {
+    lookingUpBuyer.value = false
+  }
+}
+
 const totalFormatted = computed(() =>
   ((form.value.quantity || 0) * Number(raffle.value?.pricePerNumber || 0)).toLocaleString('es-CO')
 )
 
 const isValid = computed(() =>
-  form.value.quantity >= 25 &&
+  form.value.quantity >= minQuantity.value &&
   form.value.buyerName.trim() &&
   form.value.buyerPhone.trim() &&
   form.value.buyerEmail.includes('@') &&
@@ -394,11 +427,12 @@ function onFileChange(e) {
 }
 
 function resetForm() {
-  form.value = { quantity: 25, buyerName: '', buyerPhone: '', buyerEmail: '', buyerCity: '' }
+  form.value = { quantity: minQuantity.value, buyerName: '', buyerPhone: '', buyerEmail: '', buyerCity: '' }
   purchaseId.value = null
   voucherFile.value = null
   error.value = null
   uploadError.value = null
+  autofillMsg.value = ''
 }
 
 async function reservar() {
@@ -445,6 +479,16 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+
+  try {
+    const pkg = await purchasesApi.getPackages()
+    if (pkg.data?.minimumPurchase) {
+      minQuantity.value = pkg.data.minimumPurchase
+      if (form.value.quantity < minQuantity.value) {
+        form.value.quantity = minQuantity.value
+      }
+    }
+  } catch { /* usa el valor por defecto (25) */ }
 })
 </script>
 
